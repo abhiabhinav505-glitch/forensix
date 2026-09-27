@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initNavbarShadow();
   initScrollReveal();
   initActiveNav();
+  initParallax();
+  initStageTilt();
 });
 
 function applyConfigLinks() {
@@ -107,6 +109,10 @@ function initNavbarShadow() {
 
 function initScrollReveal() {
   const items = document.querySelectorAll(".reveal");
+  items.forEach((el, index) => {
+    el.style.transitionDelay = Math.min(index % 6, 5) * 80 + "ms";
+  });
+
   if (!("IntersectionObserver" in window)) {
     items.forEach((el) => el.classList.add("in-view"));
     return;
@@ -125,6 +131,34 @@ function initScrollReveal() {
   );
 
   items.forEach((el) => observer.observe(el));
+}
+
+function initParallax() {
+  const media = document.querySelector(".hero-bg-img");
+  if (!media || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  window.addEventListener("scroll", () => {
+    const y = window.scrollY;
+    if (y < window.innerHeight * 1.4) {
+      media.style.transform = "translate3d(0," + y * 0.18 + "px,0) scale(1.08)";
+    }
+  }, { passive: true });
+}
+
+function initStageTilt() {
+  const stage = document.getElementById("labStage");
+  if (!stage || window.matchMedia("(pointer: coarse)").matches) return;
+
+  stage.addEventListener("mousemove", (event) => {
+    const rect = stage.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    stage.style.transform = "rotateY(" + x * 10 + "deg) rotateX(" + (-y * 8) + "deg)";
+  });
+
+  stage.addEventListener("mouseleave", () => {
+    stage.style.transform = "rotateY(0) rotateX(0)";
+  });
 }
 
 function initActiveNav() {
