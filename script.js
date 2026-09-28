@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initActiveNav();
   initParallax();
   initStageTilt();
+  initUnitTabs();
 });
 
 function applyConfigLinks() {
@@ -162,7 +163,7 @@ function initStageTilt() {
 }
 
 function initActiveNav() {
-  const sections = ["home", "about", "course", "benefits", "instructor", "contact"]
+  const sections = ["home", "units", "about", "benefits", "instructor", "course", "contact"]
     .map((id) => document.getElementById(id))
     .filter(Boolean);
   const links = Array.from(document.querySelectorAll(".nav-link"));
@@ -180,4 +181,32 @@ function initActiveNav() {
 
   setActive();
   window.addEventListener("scroll", setActive, { passive: true });
+}
+
+function initUnitTabs() {
+  const tabs = document.querySelectorAll(".unit-tab-btn");
+  const cards = document.querySelectorAll(".unit-card");
+  if (!tabs.length || !cards.length) return;
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      tabs.forEach((t) => {
+        t.classList.remove("is-active");
+        t.setAttribute("aria-selected", "false");
+      });
+      tab.classList.add("is-active");
+      tab.setAttribute("aria-selected", "true");
+
+      const filter = tab.getAttribute("data-filter");
+      cards.forEach((card) => {
+        const group = card.getAttribute("data-group");
+        if (filter === "all" || group === filter) {
+          card.classList.remove("is-hidden");
+          card.classList.add("in-view");
+        } else {
+          card.classList.add("is-hidden");
+        }
+      });
+    });
+  });
 }
